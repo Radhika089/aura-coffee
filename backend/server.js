@@ -1,0 +1,55 @@
+import express from "express";
+import { dbConnect } from "./config/db.js";
+import dns from "dns";
+import cookieParser from "cookie-parser";
+import userRouter from "./routes/user.routes.js";
+import productRouter from "./routes/product.routes.js";
+import cartRouter from "./routes/cart.routes.js";
+import wishlistRouter from "./routes/wishlist.routes.js";
+import orderRouter from "./routes/order.routes.js";
+import reviewRouter from "./routes/review.route.js";
+import categoryRouter from "./routes/category.routes.js";
+import inventoryRouter from "./routes/inventory.routes.js";
+import dashboardRouter from "./routes/dashboard.routes.js";
+import customerRouter from "./routes/customer.routes.js";
+import cors from "cors";
+
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
+await dbConnect();
+
+const app = express();
+
+app.use("/uploads", express.static("uploads"));
+
+app.get("/", (req, res) => {
+  res.send("Working");
+});
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use("/api/auth", userRouter);
+app.use("/api/product", productRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/wishlist", wishlistRouter);
+app.use("/api/order", orderRouter);
+app.use("/api/review", reviewRouter);
+app.use("/api/categories", categoryRouter);
+app.use("/api/inventory", inventoryRouter);
+app.use("/api/admin/dashboard", dashboardRouter);
+app.use("/api/admin/customers", customerRouter);
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log("Server is running");
+});
